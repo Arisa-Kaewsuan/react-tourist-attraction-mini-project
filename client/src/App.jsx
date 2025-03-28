@@ -2,17 +2,18 @@ import "./App.css";
 import { FaLink } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {DebounceInput} from 'react-debounce-input';
+import React from "react";
+import ReactDOM from "react-dom";
+import { DebounceInput } from "react-debounce-input";
 
 function App() {
   const [inputData, setInpuData] = useState("");
   const [apiData, setAPIData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(null); // เก็บ state ของลิงก์ที่ถูกคัดลอก
 
   const getData = async () => {
-    try{
+    try {
       setIsLoading(true);
       const response = await axios.get(
         `http://localhost:4001/trips?keywords=${inputData}`
@@ -20,8 +21,7 @@ function App() {
       // console.log(response.data.data);
       setAPIData(response.data.data);
       console.log(apiData);
-    }
-    catch(error){
+    } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
@@ -34,14 +34,29 @@ function App() {
     }
   }, [inputData]);
 
+  const handleTagClick = (tag) => {
+    setInpuData((prev) => {
+      const tags = prev.split(" ").filter(Boolean);
+      return tags.includes(tag) ? prev : `${prev} ${tag}`.trim();
+    });
+  };
+
+  const handleCopyLink = (url) => {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedUrl(url); // บันทึก URL ที่ถูกคัดลอกล่าสุด
+      setTimeout(() => setCopiedUrl(null), 2000); // ซ่อนข้อความหลังจาก 2 วินาที
+    });
+  };
+
   return (
     <div className="App p-8">
       {/* Start coding here */}
-
       <h1 className="title text-blue text-3xl text-center p-5">เที่ยวไหนดี</h1>
 
       <form className="w-full border-b border-gray-400 font-normal h-12 flex md:mx-10">
-        <label className="self-center whitespace-nowrap pr-2">ค้นหาที่เที่ยว</label>
+        <label className="self-center whitespace-nowrap pr-2">
+          ค้นหาที่เที่ยว
+        </label>
         <DebounceInput
           type="text"
           className="w-full self-end pl-10 md:pl-20 focus:outline-none"
@@ -66,9 +81,12 @@ function App() {
               />
             </div>
             <div className="w-full h-auto md:w-1/2 md:ml-5">
-              <h2 className="w-full text-lg md:text-xl font-semibold">
+              <a
+                href={data.url}
+                className="w-full text-lg md:text-xl font-semibold"
+              >
                 {data.title}
-              </h2>
+              </a>
               <p className="text-gray-400 mt-2 text-sm line-clamp-1">
                 {data.description}
               </p>
@@ -81,12 +99,21 @@ function App() {
               <div className="flex flex-wrap gap-2 text-gray-400 mt-2 items-center">
                 <p className="text-sm">หมวด</p>
                 {data.tags.slice(0, -1).map((tag, index) => (
-                  <a key={index} href="#" className="underline text-sm">
+                  <a
+                    key={index}
+                    onClick={() => handleTagClick(tag)}
+                    className="cursor-pointer underline text-sm"
+                  >
                     {tag}
                   </a>
                 ))}
                 <p className="text-sm">และ</p>
-                <a href="#" className="underline text-sm">
+                <a
+                  onClick={() =>
+                    handleTagClick(data.tags[data.tags.length - 1])
+                  }
+                  className="cursor-pointer underline text-sm"
+                >
                   {data.tags[data.tags.length - 1]}
                 </a>
               </div>
@@ -101,10 +128,20 @@ function App() {
                   ))}
                 </div>
                 <div className="border border-blue p-2 h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center flex-shrink-0">
-                  <a href="#" className="text-blue">
+                  <a
+                    onClick={() => handleCopyLink(data.url)}
+                    className="text-blue cursor-pointer"
+                  >
                     <FaLink />
                   </a>
                 </div>
+
+                {/* แสดงข้อความเมื่อคัดลอกลิงก์แล้ว */}
+                {copiedUrl === data.url && (
+                  <p className="text-green-500 text-sm mt-2">
+                    คัดลอกลิงก์แล้ว!
+                  </p>
+                )}
               </div>
             </div>
           </div>
