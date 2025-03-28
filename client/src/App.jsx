@@ -2,22 +2,36 @@ import "./App.css";
 import { FaLink } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {DebounceInput} from 'react-debounce-input';
 
 function App() {
   const [inputData, setInpuData] = useState("");
   const [apiData, setAPIData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getData = async () => {
-    const response = await axios.get(
-      `http://localhost:4001/trips?keywords=${inputData}`
-    );
-    // console.log(response.data.data);
-    setAPIData(response.data.data);
-    console.log(apiData);
+    try{
+      setIsLoading(true);
+      const response = await axios.get(
+        `http://localhost:4001/trips?keywords=${inputData}`
+      );
+      // console.log(response.data.data);
+      setAPIData(response.data.data);
+      console.log(apiData);
+    }
+    catch(error){
+      console.error("Error fetching data:", error);
+    }
   };
 
   useEffect(() => {
-    getData();
+    if (inputData.trim() !== "") {
+      getData();
+    } else {
+      getData();
+    }
   }, [inputData]);
 
   return (
@@ -26,14 +40,15 @@ function App() {
 
       <h1 className="title text-blue text-3xl text-center p-5">เที่ยวไหนดี</h1>
 
-      <form className="border-b border-gray-400 font-normal h-12 flex md:mx-10">
-        <label htmlFor="">ค้นหาที่เที่ยว</label>
-        <input
+      <form className="w-full border-b border-gray-400 font-normal h-12 flex md:mx-10">
+        <label className="self-center whitespace-nowrap pr-2">ค้นหาที่เที่ยว</label>
+        <DebounceInput
           type="text"
-          className="self-end pl-10 md:pl-20 focus:outline-none"
+          className="w-full self-end pl-10 md:pl-20 focus:outline-none"
           placeholder="หาที่เที่ยวแล้วไปกัน ..."
           value={inputData}
           onChange={(e) => setInpuData(e.target.value)}
+          debounceTimeout={1500}
         />
       </form>
 
@@ -58,8 +73,8 @@ function App() {
                 {data.description}
               </p>
               <a
-                href="#"
-                className="text-blue underline mt-2 text-sm inline-block"
+                href={data.url}
+                className="text-blue underline mt-2 text-sm inline-block cursor-pointer"
               >
                 อ่านต่อ
               </a>
@@ -81,7 +96,6 @@ function App() {
                     <img
                       key={index}
                       src={img}
-                      alt=""
                       className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 object-cover rounded-2xl"
                     />
                   ))}
