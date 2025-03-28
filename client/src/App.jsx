@@ -19,7 +19,7 @@ function App() {
       );
       // console.log(response.data.data);
       setAPIData(response.data.data);
-      // console.log(apiData);
+      console.log(apiData);
     }
     catch(error){
       console.error("Error fetching data:", error);
@@ -73,8 +73,8 @@ function App() {
                 {data.description}
               </p>
               <a
-                href="#"
-                className="text-blue underline mt-2 text-sm inline-block"
+                href={data.url}
+                className="text-blue underline mt-2 text-sm inline-block cursor-pointer"
               >
                 อ่านต่อ
               </a>
