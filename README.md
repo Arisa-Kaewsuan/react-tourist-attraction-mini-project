@@ -22,9 +22,9 @@ Tech Stack : React.js / TailwindCSS
 <br/><br/><br/>
 
 ## Requirement Checklists
-✅ สร้าง UI ตามรูปข้างล่างนี้
-    ![travel website]([https://imgur.com/a/gUVSjtt](https://imgur.com/a/nmj67lu))
-    
+✅ สร้าง UI ตามรูป
+    ![Screenshot 2025-03-28 132313](https://github.com/user-attachments/assets/440be127-6e03-4bbc-a241-73b5cdf067b6)
+
 ✅ เอาข้อมูลจาก Server ทั้งหมดมาแสดง โดยที่
     
 -  Description จะต้องแสดงไม่เกิน 100 ตัวอักษร : ใช้ line-clamp-1
