@@ -1,7 +1,25 @@
 import "./App.css";
 import { FaLink } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  const [inputData, setInpuData] = useState("");
+  const [apiData, setAPIData] = useState([]);
+
+  const getData = async () => {
+    const response = await axios.get(
+      `http://localhost:4001/trips?keywords=${inputData}`
+    );
+    // console.log(response.data.data);
+    setAPIData(response.data.data);
+    console.log(apiData);
+  };
+
+  useEffect(() => {
+    getData();
+  }, [inputData]);
+
   return (
     <div className="App p-8">
       {/* Start coding here */}
@@ -14,151 +32,70 @@ function App() {
           type="text"
           className="self-end pl-10 md:pl-20 focus:outline-none"
           placeholder="หาที่เที่ยวแล้วไปกัน ..."
+          value={inputData}
+          onChange={(e) => setInpuData(e.target.value)}
         />
       </form>
 
-      {/* Card 1 */}
-      <div className="mt-5 flex">
-        <div className="bg-amber-800 w-1/2 md:w-1/2 h-auto md:h-auto rounded-2xl">
-          <img src="" alt="" />
-        </div>
-
-        <div className="ml-5 w-full">
-          <h2 className="w-full text-xl">
-            คู่มือเที่ยวเกาะช้าง กิน เที่ยว พักที่ไหนดี? อ่านจบครบที่เดียว!
-          </h2>
-          <p className="text-gray-400">
-            วันว่างนี้ไปเที่ยวเกาะช้างกัน พร้อมทำกิจกรรมต่างๆ เช่น เที่ยวน้ำตก
-            ล่องเรือชมป่าชายเลน ขี่ช้างท่องป ...
-          </p>
-          <a href="#" className="text-blue underline">
-            อ่านต่อ
-          </a>
-
-          <div className="flex gap-4 text-gray-400">
-            <p>หมวด</p>
-            <a href="#" className="underline">
-              เกาะ
-            </a>
-            <a href="#" className="underline">
-              ทะเล
-            </a>
-            <a href="#" className="underline">
-              จุดชมวิว
-            </a>
-            <a href="#" className="underline">
-              ธรรมชาติ
-            </a>
-            <p>และ</p>
-            <a href="#" className="underline">
-              ตราด
-            </a>
-          </div>
-
-          <div className="flex py-5 items-end justify-between">
-            <div className="flex gap-4">
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
+      {apiData.map((data) => {
+        return (
+          <div
+            className="mt-5 flex flex-col md:flex-row h-auto space-y-4 md:space-y-0"
+            key={data.eid}
+          >
+            <div className="w-full md:w-1/2 flex">
+              <img
+                src={data.photos[0]}
+                alt={data.title}
+                className="rounded-2xl w-full h-48 sm:h-64 md:h-80 object-cover"
+              />
             </div>
-
-            <div className="border border-blue p-2 h-12 w-12  rounded-full flex items-center justify-center">
-              <a href="#" className="text-blue">
-                <FaLink />
+            <div className="w-full h-auto md:w-1/2 md:ml-5">
+              <h2 className="w-full text-lg md:text-xl font-semibold">
+                {data.title}
+              </h2>
+              <p className="text-gray-400 mt-2 text-sm line-clamp-1">
+                {data.description}
+              </p>
+              <a
+                href="#"
+                className="text-blue underline mt-2 text-sm inline-block"
+              >
+                อ่านต่อ
               </a>
+              <div className="flex flex-wrap gap-2 text-gray-400 mt-2 items-center">
+                <p className="text-sm">หมวด</p>
+                {data.tags.slice(0, -1).map((tag, index) => (
+                  <a key={index} href="#" className="underline text-sm">
+                    {tag}
+                  </a>
+                ))}
+                <p className="text-sm">และ</p>
+                <a href="#" className="underline text-sm">
+                  {data.tags[data.tags.length - 1]}
+                </a>
+              </div>
+              <div className="flex py-4 items-end justify-between">
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {data.photos.slice(1).map((img, index) => (
+                    <img
+                      key={index}
+                      src={img}
+                      alt=""
+                      className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 object-cover rounded-2xl"
+                    />
+                  ))}
+                </div>
+                <div className="border border-blue p-2 h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center flex-shrink-0">
+                  <a href="#" className="text-blue">
+                    <FaLink />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Card 2 */}
-      <div className="mt-5 flex">
-        <div className="bg-amber-800 w-1/2 md:w-1/2 h-auto md:h-auto rounded-2xl">
-          <img src="" alt="" />
-        </div>
-
-        <div className="ml-5 w-full">
-          <h2 className="w-full text-xl">
-            คู่มือเที่ยวเกาะช้าง กิน เที่ยว พักที่ไหนดี? อ่านจบครบที่เดียว!
-          </h2>
-          <p className="text-gray-400">
-            วันว่างนี้ไปเที่ยวเกาะช้างกัน พร้อมทำกิจกรรมต่างๆ เช่น เที่ยวน้ำตก
-            ล่องเรือชมป่าชายเลน ขี่ช้างท่องป ...
-          </p>
-          <a href="#" className="text-blue underline">
-            อ่านต่อ
-          </a>
-
-          <div className="flex gap-4 text-gray-400">
-            <p>หมวด</p>
-            <a href="#" className="underline">
-              เกาะ
-            </a>
-            <a href="#" className="underline">
-              ทะเล
-            </a>
-            <a href="#" className="underline">
-              จุดชมวิว
-            </a>
-            <a href="#" className="underline">
-              ธรรมชาติ
-            </a>
-            <p>และ</p>
-            <a href="#" className="underline">
-              ตราด
-            </a>
-          </div>
-
-          <div className="flex py-5 items-end justify-between">
-            <div className="flex gap-4">
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
-              <img src="" alt="" className="w-24 h-24 rounded-2xl" />
-            </div>
-
-            <div className="border border-blue p-2 h-12 w-12  rounded-full flex items-center justify-center">
-              <a href="#" className="text-blue">
-                <FaLink />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Card 3 */}
-      <div className="mt-5 flex">
-      <div className="bg-amber-800 w-1/2 md:w-1/2 h-auto md:h-auto rounded-2xl">
-        <img src="" alt="" />
-      </div>
-
-      <div className="ml-5 w-full">
-        <h2 className="w-full text-xl">คู่มือเที่ยวเกาะช้าง กิน เที่ยว พักที่ไหนดี? อ่านจบครบที่เดียว!</h2>
-        <p className="text-gray-400">วันว่างนี้ไปเที่ยวเกาะช้างกัน พร้อมทำกิจกรรมต่างๆ เช่น เที่ยวน้ำตก ล่องเรือชมป่าชายเลน ขี่ช้างท่องป ...</p>
-        <a href="#" className="text-blue underline">อ่านต่อ</a>
-
-        <div className="flex gap-4 text-gray-400">
-          <p>หมวด</p>
-          <a href="#" className="underline">เกาะ</a>
-          <a href="#" className="underline">ทะเล</a>
-          <a href="#" className="underline">จุดชมวิว</a>
-          <a href="#" className="underline">ธรรมชาติ</a>
-          <p>และ</p>
-          <a href="#" className="underline">ตราด</a>
-        </div>
-
-        <div className="flex py-5 items-end justify-between">
-          <div className="flex gap-4">
-            <img src="" alt="" className="w-24 h-24 rounded-2xl"/>
-            <img src="" alt="" className="w-24 h-24 rounded-2xl"/>
-            <img src="" alt="" className="w-24 h-24 rounded-2xl"/>
-          </div>
-
-          <div className="border border-blue p-2 h-12 w-12  rounded-full flex items-center justify-center">
-            <a href="#" className="text-blue"><FaLink /></a>
-          </div>
-        </div>
-      </div>
-    </div>
+        );
+      })}
     </div>
   );
 }
