@@ -87,12 +87,19 @@ function App() {
               >
                 {data.title}
               </a>
+
+              {/* Fix 1 : ตัดคำใน description -- แทนที่จะใช้ line-clamp-1 ใช้ function substring แทน ซึ่งทำให้ SEO ดีกว่า เพราะ ทำงานเหมือนกันบนทุกเบราว์เซอร์ เนื่องจากเราใช้ JS แทน CSS ที่ line-clamp เป็นเพียงการซ่อนทางสายตา ซึ่งอาจมีผลต่อ SEO */}
               <p className="text-gray-400 mt-2 text-sm line-clamp-1">
-                {data.description}
+                {data.description.length > 100 ? `${data.description.substring(0, 100)}...` : data.description}
               </p>
+
+              {/* Fix 2 : เพิ่ม target="_blank" rel="noopener" ช่วยให้เปิดลิงค์ใน tab ใหม่ได้อย่างปลอดภัย เพราะ */}
+              {/* rel="noopener" ตัดการเชื่อมต่อระหว่างแท็บเดิมกับแท็บใหม่ ทำให้แท็บใหม่ไม่สามารถเข้าถึง JavaScript context ของหน้าเดิมได้ ซึ่งเป็นการเพิ่มความปลอดภัยในการเปิดลิงก์ภายนอกอย่างมาก */}
               <a
                 href={data.url}
                 className="text-blue underline mt-2 text-sm inline-block cursor-pointer"
+                target="_blank"
+                rel="noopener"
               >
                 อ่านต่อ
               </a>
@@ -127,6 +134,8 @@ function App() {
                     />
                   ))}
                 </div>
+
+                {/* Fix 3 : ทำให้กด copy link แล้ว link ถูกคัดลอกไปลง clipboard จริงๆ จะทำให้ UX ดี */}
                 <div className="border border-blue p-2 h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center flex-shrink-0">
                   <a
                     onClick={() => handleCopyLink(data.url)}
@@ -136,7 +145,6 @@ function App() {
                   </a>
                 </div>
 
-                {/* แสดงข้อความเมื่อคัดลอกลิงก์แล้ว */}
                 {copiedUrl === data.url && (
                   <p className="text-green-500 text-sm mt-2">
                     คัดลอกลิงก์แล้ว!
